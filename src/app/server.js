@@ -4,6 +4,10 @@ import morgan from 'morgan'
 import helmet from 'helmet'
 import bodyParser from 'body-parser'
 import Routes from '../routes/routes.js'
+import environment from '../env.js'
+
+import database from '../database/db.js'
+const connection = database(environment)
 
 const app = express()
 
@@ -25,13 +29,13 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(morgan('combined'))
 
 app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*') // em producao, trocar pelo dominio do app
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
-    next()
-  })
+  res.header('Access-Control-Allow-Origin', '*') // em producao, trocar pelo dominio do app
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
+  next()
+})
+
+
+const client = await connection.connect()
+console.log(client)
 
 Routes(app)
-
-app.listen(process.env.PORT | 3080, () => {
-    console.log('Server listening on port ', process.env.PORT | 3080)
-})
